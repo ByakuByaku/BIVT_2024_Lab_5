@@ -20,12 +20,9 @@ public class Program
     #region Level 1
     static int Factorial(int n)
         {
-        int fact = 1;
-            for (int i = n; i > 0; i--)
-            {
-                fact *= i;
-            }
-        return fact;
+        if (n < 2) return 1;
+
+        return n*Factorial(n-1);
         }
     static void Combinations (int n, int k, out long combinations)
     {
@@ -34,6 +31,7 @@ public class Program
     public long Task_1_1(int n, int k)
     {
         long answer = 0;
+        if (n < k || n < 0 || k < 0) return 0;
         Combinations(n, k, out answer);
         
         // code here
@@ -182,6 +180,24 @@ public class Program
     //    avg /= count;
     //    return avg;
     //}
+    void avg(double[] A, int finalmax, out double avg)
+    {
+        avg = 0;
+        int cnt = 0;
+        for (int i = finalmax + 1; i < A.Length; i++)
+        {
+            avg+= A[i]; cnt++;
+        }
+        avg/= cnt;
+    }
+    void getArray(ref double[] A, double sr, int finalmax)
+    {
+        for (int i = 0; i < A.Length; i++)
+        {
+            if (A[i] == A[finalmax])
+                A[i] = sr;
+        }
+    }
     public void Task_2_2(double[] A, double[] B)
     {
         // code here
@@ -195,33 +211,37 @@ public class Program
         {
             
             finalmax = max_index_A;
-            for (int i = finalmax + 1; i < A.Length; i++)
-            {
-                sr += A[i];
-                cnt++;
-            }
-            sr /= cnt;
-            for (int i = 0; i < A.Length; i++)
-            {
-                if (A[i] == A[finalmax])
-                    A[i] = sr;
-            }
+            //for (int i = finalmax + 1; i < A.Length; i++)
+            //{
+            //    sr += A[i];
+            //    cnt++;
+            //}
+            //sr /= cnt;
+            avg(A,finalmax,out sr);
+            //for (int i = 0; i < A.Length; i++)
+            //{
+            //    if (A[i] == A[finalmax])
+            //        A[i] = sr;
+            //}
+            getArray(ref A, sr, finalmax);
 
         }
         else
         {
             finalmax = max_index_B;
-            for (int i = finalmax + 1; i < B.Length; i++)
-            {
-                sr += B[i];
-                cnt++;
-            }
-            sr /= cnt;
-            for (int i = 0; i < B.Length; i++)
-            {
-                if (B[i] == B[finalmax])
-                    B[i] = sr;
-            }
+            //for (int i = finalmax + 1; i < B.Length; i++)
+            //{
+            //    sr += B[i];
+            //    cnt++;
+            //}
+            //sr /= cnt;
+            avg(B, finalmax, out sr);
+            //for (int i = 0; i < B.Length; i++)
+            //{
+            //    if (B[i] == B[finalmax])
+            //        B[i] = sr;
+            //}
+            getArray(ref B, sr, finalmax);
 
 
         }
@@ -706,23 +726,38 @@ public class Program
 
         }
     }
+    int CountZero (int[,] matrix, int col)
+    {
+        
+            int cnt = 0;
+            for (int j = 0;j < matrix.GetLength(0); j++)
+            {
+                if (matrix[j, col] == 0)
+                {
+                    cnt++;
+                    return cnt;
+                }
+            }
+        
+        return 0;
+    }
     public void Task_2_20(ref int[,] A, ref int[,] B)
     {
         // code here
         for (int i = 0; i < A.GetLength(1); i++)
         {
-            int count = 0;
+            int count = CountZero(A,i);
 
 
-            for (int j = 0; j < A.GetLength(0); j++)
-            {
-                if (A[j, i] == 0)
-                {
-                    count++;
+            //for (int j = 0; j < A.GetLength(0); j++)
+            //{
+            //    if (A[j, i] == 0)
+            //    {
+            //        count++;
 
-                    break;
-                }
-            }
+            //        break;
+            //    }
+            //}
             if (count == 0)
             {
                 A = RemoveColumn(A, i);
@@ -733,16 +768,16 @@ public class Program
         }
         for (int i = 0; i < B.GetLength(1); i++)
         {
-            int count = 0;
-            for (int j = 0; j < B.GetLength(0); j++)
-            {
-                if (B[j, i] == 0)
-                {
-                    count++;
+            int count = CountZero(B, i);
+            //for (int j = 0; j < B.GetLength(0); j++)
+            //{
+            //    if (B[j, i] == 0)
+            //    {
+            //        count++;
 
-                    break;
-                }
-            }
+            //        break;
+            //    }
+            //}
             if (count == 0)
             {
 
@@ -981,95 +1016,139 @@ public class Program
             Console.WriteLine($"({results[i, 0]}, {results[i, 1]})");
         }
     }
+    void method (int[] array, ref int[,] answer)
+    {
+        int cnt = 0;
+        for (int i = 0; i < array.Length; i++)
+        {
+            for (int j = i + 1; j < array.Length; j++)
+            {
+                int seq = FindSequence(array, i, j);
+                if (seq != 0) cnt++;
+            }
+        }
+        answer = new int[cnt, 2];
+        cnt = 0;
+        for (int i = 0; i < array.Length; i++)
+        {
+            for (int j = i + 1; j < array.Length; j++)
+            {
+                int seq = FindSequence(array, i, j);
+                if (seq != 0)
+                {
+                    answer[cnt, 0] = i;
+                    answer[cnt, 1] = j;
+                    cnt++;
+                }
+            }
+        }
+    }
 public void Task_2_28b(int[] first, int[] second, ref int[,] answerFirst, ref int[,] answerSecond)
     {
         // code here
         int cnt = 0;
-        for (int i = 0; i < first.Length; i++)
-        {
-            for (int j = i + 1; j < first.Length; j++)
-            {
-                int seq = FindSequence(first, i, j);
-                if (seq != 0) cnt++;
-            }
-        }
-        answerFirst = new int[cnt, 2];
-        cnt = 0;
-        for (int i = 0; i < first.Length; i++)
-        {
-            for (int j = i + 1; j < first.Length; j++)
-            {
-                int seq = FindSequence(first, i, j);
-                if (seq != 0)
-                {
-                    answerFirst[cnt, 0] = i;
-                    answerFirst[cnt, 1] = j;
-                    cnt++;
-                }
-            }
-        }
-
-        cnt = 0;
-        for (int i = 0; i < second.Length; i++)
-        {
-            for (int j = i + 1; j < second.Length; j++)
-            {
-                int seq = FindSequence(second, i, j);
-                if (seq != 0) cnt++;
-            }
-        }
-        answerSecond = new int[cnt, 2];
-        cnt = 0;
-        for (int i = 0; i < second.Length; i++)
-        {
-            for (int j = i + 1; j < second.Length; j++)
-            {
-                int seq = FindSequence(second, i, j);
-                if (seq != 0)
-                {
-                    answerSecond[cnt, 0] = i;
-                    answerSecond[cnt, 1] = j;
-                    cnt++;
-                }
-            }
-        }
+        //for (int i = 0; i < first.Length; i++)
+        //{
+        //    for (int j = i + 1; j < first.Length; j++)
+        //    {
+        //        int seq = FindSequence(first, i, j);
+        //        if (seq != 0) cnt++;
+        //    }
+        //}
+        //answerFirst = new int[cnt, 2];
+        //cnt = 0;
+        //for (int i = 0; i < first.Length; i++)
+        //{
+        //    for (int j = i + 1; j < first.Length; j++)
+        //    {
+        //        int seq = FindSequence(first, i, j);
+        //        if (seq != 0)
+        //        {
+        //            answerFirst[cnt, 0] = i;
+        //            answerFirst[cnt, 1] = j;
+        //            cnt++;
+        //        }
+        //    }
+        //}
+        method(first, ref answerFirst);
+        method(second, ref answerSecond);
+        //cnt = 0;
+        //for (int i = 0; i < second.Length; i++)
+        //{
+        //    for (int j = i + 1; j < second.Length; j++)
+        //    {
+        //        int seq = FindSequence(second, i, j);
+        //        if (seq != 0) cnt++;
+        //    }
+        //}
+        //answerSecond = new int[cnt, 2];
+        //cnt = 0;
+        //for (int i = 0; i < second.Length; i++)
+        //{
+        //    for (int j = i + 1; j < second.Length; j++)
+        //    {
+        //        int seq = FindSequence(second, i, j);
+        //        if (seq != 0)
+        //        {
+        //            answerSecond[cnt, 0] = i;
+        //            answerSecond[cnt, 1] = j;
+        //            cnt++;
+        //        }
+        //    }
+        //}
         // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a
         // A and B - start and end indexes of elements from array for search
 
         // end
     }
-
+    void abc(ref int a, ref int b, int[] array)
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            for (int j = i + 1; j < array.Length; j++)
+            {
+                int seq = FindSequence(array, i, j);
+                if (seq != 0 && b - a < j - i)
+                {
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+    }
     public void Task_2_28c(int[] first, int[] second, ref int[] answerFirst, ref int[] answerSecond)
     {
         // code here
         int a = 0, b = 0;
-        for (int i = 0; i < first.Length; i++)
-        {
-            for (int j = i + 1; j < first.Length; j++)
-            {
-                int seq = FindSequence(first, i, j);
-                if (seq != 0 && b - a < j - i)
-                {
-                    a = i;
-                    b = j;
-                }
-            }
-        }
+        abc(ref a, ref b, first);
+        //for (int i = 0; i < first.Length; i++)
+        //{
+        //    for (int j = i + 1; j < first.Length; j++)
+        //    {
+        //        int seq = FindSequence(first, i, j);
+        //        if (seq != 0 && b - a < j - i)
+        //        {
+        //            a = i;
+        //            b = j;
+        //        }
+        //    }
+        //}
         answerFirst = new int[] { a, b };
 
         a = 0; b = 0;
-        for (int i = 0; i < second.Length; i++)
-        {
-            for (int j = i + 1; j < second.Length; j++)
-            {
-                int seq = FindSequence(second, i, j);
-                if (seq != 0 && b - a < j - i)
-                {
-                    a = i;
-                    b = j;
-                }
-            }
-        }
+        abc(ref a, ref b, second);
+        //for (int i = 0; i < second.Length; i++)
+        //{
+        //    for (int j = i + 1; j < second.Length; j++)
+        //    {
+        //        int seq = FindSequence(second, i, j);
+        //        if (seq != 0 && b - a < j - i)
+        //        {
+        //            a = i;
+        //            b = j;
+        //        }
+        //    }
+        //}
         answerSecond = new int[] { a, b };
         // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a or Task_2_28b
         // A and B - start and end indexes of elements from array for search
